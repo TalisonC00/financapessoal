@@ -2,87 +2,137 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanças Pro R$</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Finanças Pro 🛠️</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e3799">
+    <link rel="apple-touch-icon" href="logo.jpg">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
         :root {
-            --primary: #00b894;
-            --income: #2ecc71;
-            --expense: #ff7675; /* Vermelho mais suave para o fundo azul */
-            --bg: #f4f7f6;
+            --accent: #00d2ff;
+            --bg-dark: #121212;
+            --card-dark: #1e1e1e;
+            --income: #00b894;
+            --expense: #ff7675;
         }
-        body { background-color: var(--bg); font-family: 'Segoe UI', Roboto, sans-serif; }
+        
+        body { 
+            background-color: var(--bg-dark); 
+            color: #ffffff;
+            font-family: 'Inter', -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* CABEÇALHO TECH */
         .premium-header {
-            background: linear-gradient(135deg, #0984e3, #00b894);
-            color: white; padding: 35px 20px; border-radius: 0 0 25px 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white; padding: 45px 20px 65px 20px; border-radius: 0 0 30px 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        .card-premium {
-            background: white; border: none; border-radius: 18px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 15px;
+
+        .header-labels {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 18px; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .nav-pills { background: #e9ecef; border-radius: 50px; padding: 4px; }
-        .nav-link.active { background-color: var(--primary) !important; border-radius: 50px; box-shadow: 0 4px 8px rgba(0,184,148,0.2); }
-        .btn-delete { color: #fab1a0; cursor: pointer; transition: 0.2s; }
-        .btn-delete:hover { color: #e74c3c; }
-        .badge-income { color: #2ecc71; font-weight: bold; }
-        .badge-expense { color: #ff7675; font-weight: bold; }
+
+        .card-premium { 
+            background: var(--card-dark); border: 1px solid #2d2d2d; 
+            border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+            margin-bottom: 15px; 
+        }
+
+        /* NAVEGAÇÃO */
+        .nav-pills { background: #252525; border-radius: 12px; padding: 5px; }
+        .nav-link { color: #888; font-weight: 600; border-radius: 10px !important; }
+        .nav-link.active { 
+            background-color: var(--accent) !important; 
+            color: #000 !important;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+        }
+
+        /* INPUTS E BOTÕES */
+        .form-control, .form-select {
+            background-color: #252525; border: 1px solid #333; color: white;
+            border-radius: 10px; padding: 12px;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: #2a2a2a; border-color: var(--accent); color: white; box-shadow: none;
+        }
+
+        .btn-main { 
+            background: var(--accent); border: none; border-radius: 12px; 
+            padding: 15px; font-weight: 800; color: #000; width: 100%; 
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        
+        #install-banner {
+            display: none; position: fixed; top: 15px; left: 50%;
+            transform: translateX(-50%); z-index: 9999; width: 92%;
+        }
+
+        .btn-delete { color: #555; cursor: pointer; transition: 0.3s; }
+        .btn-delete:hover { color: var(--expense); }
     </style>
 </head>
 <body class="pb-5">
 
+    <div id="install-banner">
+        <div class="card p-3 text-center border-0 shadow-lg" style="background: #1e1e1e; border-radius: 15px; border: 1px solid var(--accent) !important;">
+            <p class="mb-2 small fw-bold" style="color: var(--accent);">Instalar App na Tela Inicial? 🛠️</p>
+            <button id="btn-install" class="btn btn-main py-2">Instalar Agora</button>
+        </div>
+    </div>
+
     <div class="premium-header text-center">
-        <small class="text-uppercase" style="letter-spacing: 1px; opacity: 0.9;">Saldo em Conta</small>
-        <h1 class="display-6 fw-bold mb-1" id="resumoSaldo">R$ 0,00</h1>
+        <small class="text-uppercase" style="letter-spacing: 2px; opacity: 0.6; font-size: 0.7rem;">Saldo Consolidado</small>
+        <h1 class="display-4 fw-bold mb-3" id="resumoSaldo">R$ 0,00</h1>
         
-        <div class="d-flex justify-content-center gap-4 mt-3">
-            <div class="small d-flex align-items-center gap-1">
-                <i class="bi bi-arrow-up-circle-fill" style="color: #2ecc71;"></i> 
-                <span>Entradas:</span>
+        <div class="d-flex justify-content-center gap-2">
+            <div class="header-labels small">
+                <i class="bi bi-graph-up-arrow text-success"></i> 
                 <span id="resumoEntradas" class="fw-bold">R$ 0,00</span>
             </div>
-            <div class="small d-flex align-items-center gap-1">
-                <i class="bi bi-arrow-down-circle-fill" style="color: #ff7675;"></i> 
-                <span>Saídas:</span>
+            <div class="header-labels small">
+                <i class="bi bi-graph-down-arrow text-danger"></i> 
                 <span id="resumoSaidas" class="fw-bold">R$ 0,00</span>
             </div>
         </div>
     </div>
 
-    <div class="container mt-4">
-        <ul class="nav nav-pills nav-fill mb-4 shadow-sm" id="pills-tab" role="tablist">
-            <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#aba-novo"><i class="bi bi-plus-lg"></i> Novo</button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#aba-extrato"><i class="bi bi-list-ul"></i> Extrato</button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#aba-poupanca"><i class="bi bi-piggy-bank"></i> Cofre</button></li>
+    <div class="container mt-n3" style="margin-top: -35px; position: relative; z-index: 10;">
+        <ul class="nav nav-pills nav-fill mb-4 shadow-lg" id="pills-tab" role="tablist">
+            <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#aba-novo"><i class="bi bi-plus-square"></i></button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#aba-extrato"><i class="bi bi-activity"></i></button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#aba-poupanca"><i class="bi bi-shield-lock"></i></button></li>
         </ul>
 
         <div class="tab-content">
             <div class="tab-pane fade show active" id="aba-novo">
                 <div class="card card-premium p-4">
-                    <h6 class="text-muted mb-3 text-center">Registrar Movimentação</h6>
-                    
-                    <select id="mes" class="form-select border-0 bg-light mb-3" onchange="renderizar()">
+                    <select id="mes" class="form-select mb-3" onchange="renderizar()">
                         <option>Janeiro</option><option>Fevereiro</option><option>Março</option>
                         <option>Abril</option><option>Maio</option><option>Junho</option>
                         <option>Julho</option><option>Agosto</option><option>Setembro</option>
                         <option>Outubro</option><option>Novembro</option><option>Dezembro</option>
                     </select>
-
-                    <div class="btn-group w-100 mb-3" role="group">
+                    
+                    <div class="btn-group w-100 mb-3">
                         <input type="radio" class="btn-check" name="tipo" id="tipoEntrada" value="Entrada" checked>
-                        <label class="btn btn-outline-success" for="tipoEntrada">Entrada</label>
+                        <label class="btn btn-outline-success border-2" for="tipoEntrada">Entrada</label>
                         <input type="radio" class="btn-check" name="tipo" id="tipoSaida" value="Saída">
-                        <label class="btn btn-outline-danger" for="tipoSaida">Saída</label>
+                        <label class="btn btn-outline-danger border-2" for="tipoSaida">Saída</label>
                     </div>
 
-                    <input type="text" id="desc" class="form-control mb-2 border-0 bg-light" placeholder="Ex: Salário, Aluguel...">
-                    <input type="number" id="valor" class="form-control mb-4 border-0 bg-light" placeholder="Valor (R$)">
+                    <input type="text" id="desc" class="form-control mb-2" placeholder="Descrição da Transação">
+                    <input type="number" id="valor" class="form-control mb-4" placeholder="Valor (R$)">
                     
-                    <button onclick="adicionarRegistro()" class="btn btn-success w-100 py-3 fw-bold rounded-3 shadow-sm">
-                        Confirmar Registro
-                    </button>
+                    <button onclick="adicionarRegistro()" class="btn-main shadow-lg">Lançar Transação</button>
                 </div>
             </div>
 
@@ -92,28 +142,26 @@
 
             <div class="tab-pane fade" id="aba-poupanca">
                 <div class="card card-premium p-4 text-center">
-                    <div class="mb-2"><i class="bi bi-wallet2 text-primary display-4"></i></div>
-                    <h6 class="text-muted">Saldo Acumulado no Cofre</h6>
-                    <h2 class="fw-bold text-primary mb-4" id="totalCofre">R$ 0,00</h2>
-                    
-                    <input type="number" id="valorPoupanca" class="form-control mb-3 border-0 bg-light text-center" placeholder="Valor R$">
+                    <div class="mb-3"><i class="bi bi-safe2-fill display-4 text-primary" style="color: var(--accent) !important;"></i></div>
+                    <h6 class="text-muted text-uppercase small">Reserva de Capital</h6>
+                    <h2 class="fw-bold mb-4" id="totalCofre">R$ 0,00</h2>
+                    <input type="number" id="valorPoupanca" class="form-control mb-3 text-center" placeholder="Valor R$">
                     <div class="d-flex gap-2">
-                        <button onclick="gerirPoupanca('add')" class="btn btn-primary w-100">Depositar</button>
-                        <button onclick="gerirPoupanca('sub')" class="btn btn-outline-danger w-100">Resgatar</button>
+                        <button onclick="gerirPoupanca('add')" class="btn btn-main py-2">Depositar</button>
+                        <button onclick="gerirPoupanca('sub')" class="btn btn-outline-danger w-100 py-2 border-2" style="border-radius: 12px;">Resgatar</button>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="text-center mt-5">
-            <button onclick="limparTudo()" class="btn btn-sm text-muted opacity-50 border-0">Limpar todo o histórico</button>
+            <button onclick="limparTudo()" class="btn btn-sm text-muted opacity-25 border-0">Limpar Base de Dados</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let dados = JSON.parse(localStorage.getItem('financas_pro')) || { transacoes: [], cofre: 0 };
-
+        let dados = JSON.parse(localStorage.getItem('financas_masc_v1')) || { transacoes: [], cofre: 0 };
         function formatar(v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
 
         function adicionarRegistro() {
@@ -121,23 +169,14 @@
             const desc = document.getElementById('desc').value;
             const valor = parseFloat(document.getElementById('valor').value) || 0;
             const tipo = document.querySelector('input[name="tipo"]:checked').value;
-
-            if (!desc || valor <= 0) {
-                alert("Insira a descrição e o valor!");
-                return;
-            }
-
-            const id = Date.now();
-            dados.transacoes.push({ id, mes, desc, valor, tipo });
+            if (!desc || valor <= 0) return;
+            dados.transacoes.push({ id: Date.now(), mes, desc, valor, tipo });
             salvar();
-            
-            document.getElementById('desc').value = "";
-            document.getElementById('valor').value = "";
-            alert("Registrado!");
+            document.getElementById('desc').value = ""; document.getElementById('valor').value = "";
         }
 
         function removerRegistro(id) {
-            if(confirm("Deseja apagar este registro?")) {
+            if(confirm("Remover registro do histórico?")) {
                 dados.transacoes = dados.transacoes.filter(t => t.id !== id);
                 salvar();
             }
@@ -152,7 +191,7 @@
         }
 
         function salvar() {
-            localStorage.setItem('financas_pro', JSON.stringify(dados));
+            localStorage.setItem('financas_masc_v1', JSON.stringify(dados));
             renderizar();
         }
 
@@ -160,43 +199,47 @@
             const mesAtual = document.getElementById('mes').value;
             const lista = document.getElementById('listaExtrato');
             lista.innerHTML = "";
+            let entM = 0; let saiM = 0;
+            const itens = dados.transacoes.filter(t => t.mes === mesAtual);
 
-            let entTotal = 0; let saiTotal = 0;
+            if (itens.length === 0) lista.innerHTML = `<div class="text-center opacity-25 py-5">Sem dados para ${mesAtual}</div>`;
 
-            const itensFiltrados = dados.transacoes.filter(t => t.mes === mesAtual);
-
-            if (itensFiltrados.length === 0) {
-                lista.innerHTML = `<div class="text-center opacity-50 py-5">Nenhum registro em ${mesAtual}</div>`;
-            }
-
-            itensFiltrados.forEach((t) => {
-                const isEntrada = t.tipo === "Entrada";
-                if(isEntrada) entTotal += t.valor; else saiTotal += t.valor;
-
+            itens.forEach((t) => {
+                const isE = t.tipo === "Entrada";
+                if(isE) entM += t.valor; else saiM += t.valor;
                 lista.innerHTML += `
-                    <div class="card card-premium p-3 mb-2 border-start border-4 ${isEntrada ? 'border-success' : 'border-danger'}">
+                    <div class="card card-premium p-3 mb-2" style="border-left: 4px solid ${isE ? 'var(--income)' : 'var(--expense)'} !important;">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center gap-3">
-                                <i class="bi bi-trash btn-delete fs-5" onclick="removerRegistro(${t.id})"></i>
-                                <div>
-                                    <small class="text-muted d-block" style="font-size: 0.7rem;">${t.tipo}</small>
-                                    <strong class="d-block">${t.desc}</strong>
-                                </div>
+                                <i class="bi bi-trash3 btn-delete" onclick="removerRegistro(${t.id})"></i>
+                                <div><small class="text-muted d-block" style="font-size:0.65rem; text-transform: uppercase;">${t.tipo}</small><strong>${t.desc}</strong></div>
                             </div>
-                            <div class="${isEntrada ? 'text-success' : 'text-danger'} fw-bold">
-                                ${isEntrada ? '+' : '-'} ${formatar(t.valor)}
-                            </div>
+                            <div class="${isE ? 'text-success' : 'text-danger'} fw-bold" style="font-family: 'Courier New', monospace;">${isE ? '+' : '-'} ${formatar(t.valor)}</div>
                         </div>
                     </div>`;
             });
-
-            document.getElementById('resumoEntradas').innerText = formatar(entTotal);
-            document.getElementById('resumoSaidas').innerText = formatar(saiTotal);
-            document.getElementById('resumoSaldo').innerText = formatar(entTotal - saiTotal);
+            document.getElementById('resumoEntradas').innerText = formatar(entM);
+            document.getElementById('resumoSaidas').innerText = formatar(saiM);
+            document.getElementById('resumoSaldo').innerText = formatar(entM - saiM);
             document.getElementById('totalCofre').innerText = formatar(dados.cofre);
         }
 
-        function limparTudo() { if(confirm("CUIDADO: Isso apagará tudo. Continuar?")) { dados = { transacoes: [], cofre: 0 }; salvar(); } }
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); deferredPrompt = e;
+            document.getElementById('install-banner').style.display = 'block';
+        });
+
+        document.getElementById('btn-install').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') document.getElementById('install-banner').style.display = 'none';
+                deferredPrompt = null;
+            }
+        });
+
+        if (window.matchMedia('(display-mode: standalone)').matches) document.getElementById('install-banner').style.display = 'none';
 
         renderizar();
     </script>
