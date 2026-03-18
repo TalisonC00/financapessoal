@@ -4,190 +4,123 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Finanças Pro 🛠️</title>
-    
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f0c29">
-    <link rel="apple-touch-icon" href="logo.png">
-    <link rel="icon" type="image/png" href="logo.png">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    
     <style>
-        :root { 
-            --accent: #00d2ff; 
-            --bg-dark: #121212; 
-            --card-dark: #1e1e1e; 
-            --income: #00b894; 
-            --expense: #ff7675; 
-        }
+        :root { --accent: #00d2ff; --bg: #121212; --card: #1e1e1e; --in: #00b894; --out: #ff7675; }
+        body { background-color: var(--bg); color: #fff; font-family: sans-serif; overflow-x: hidden; }
+        .premium-header { background: linear-gradient(135deg, #0f0c29, #302b63); padding: 40px 20px 60px; border-radius: 0 0 30px 30px; text-align: center; }
+        .h-label { background: rgba(255, 255, 255, 0.08); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); flex: 1; }
+        .card-p { background: var(--card); border: 1px solid #444; border-radius: 16px; margin-bottom: 15px; padding: 20px; }
         
-        body { 
-            background-color: var(--bg-dark); 
-            color: #ffffff; 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        .premium-header { 
-            background: linear-gradient(135deg, #0f0c29, #302b63); 
-            padding: 45px 20px 65px; 
-            border-radius: 0 0 30px 30px; 
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        /* Menu de Abas Fixo */
+        .nav-custom { background: #252525; border-radius: 12px; display: flex; padding: 5px; margin: -30px 15px 20px; position: relative; z-index: 20; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .nav-item-custom { flex: 1; text-align: center; padding: 10px; color: #888; cursor: pointer; border-radius: 10px; transition: 0.3s; }
+        .nav-item-custom.active { background: var(--accent); color: #000; font-weight: bold; }
 
-        .header-labels { 
-            background: rgba(255, 255, 255, 0.08); 
-            padding: 12px; 
-            border-radius: 12px; 
-            border: 1px solid rgba(255,255,255,0.1); 
-            flex: 1;
-        }
+        .aba-content { display: none; }
+        .aba-content.active { display: block; }
 
-        .card-p { 
-            background: var(--card-dark); 
-            border: 1px solid #444; 
-            border-radius: 16px; 
-            margin-bottom: 15px; 
-            padding: 20px; 
-        }
-
-        .nav-pills { background: #252525; border-radius: 12px; padding: 5px; margin-bottom: 20px; }
-        .nav-link { color: #bbb; font-weight: 600; border-radius: 10px !important; }
-        .nav-link.active { background-color: var(--accent) !important; color: #000 !important; box-shadow: 0 0 15px rgba(0,210,255,0.3); }
-
-        /* Melhoria de Legibilidade nos Inputs */
-        .form-control, .form-select { 
-            background: #252525; 
-            border: 1px solid #555; 
-            color: #ffffff; 
-            border-radius: 10px; 
-            margin-bottom: 10px; 
-        }
-        .form-control::placeholder { color: #aaaaaa; opacity: 1; }
-        .form-control:focus { background: #2a2a2a; border-color: var(--accent); color: #fff; box-shadow: none; }
-
-        .btn-m { 
-            background: var(--accent); 
-            border: none; 
-            border-radius: 12px; 
-            padding: 14px; 
-            font-weight: 800; 
-            color: #000; 
-            width: 100%; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-        }
-
-        #install-bar { 
-            display: none; 
-            background: var(--accent); 
-            color: #000; 
-            padding: 12px; 
-            text-align: center; 
-            position: fixed; 
-            bottom: 0; 
-            width: 100%; 
-            z-index: 1000; 
-            font-weight: bold; 
-            cursor: pointer;
-        }
-
-        .btn-delete { color: #888; cursor: pointer; transition: 0.2s; }
-        .btn-delete:hover { color: var(--expense); }
+        .form-control, .form-select { background: #252525; border: 1px solid #555; color: #fff; margin-bottom: 12px; }
+        .form-control::placeholder { color: #888; }
+        .btn-m { background: var(--accent); border: none; border-radius: 12px; padding: 14px; font-weight: 800; color: #000; width: 100%; text-transform: uppercase; }
+        #install-bar { display: none; background: var(--accent); color: #000; padding: 12px; text-align: center; position: fixed; bottom: 0; width: 100%; z-index: 1000; font-weight: bold; }
     </style>
 </head>
 <body class="pb-5">
 
-    <div id="install-bar" onclick="instalar()">CLIQUE AQUI PARA INSTALAR O APP 🛠️</div>
+    <div id="install-bar" onclick="instalar()">INSTALAR APLICATIVO 🛠️</div>
 
     <div class="premium-header">
-        <small class="text-uppercase opacity-75" style="letter-spacing: 2px;">Saldo Consolidado</small>
+        <small class="text-uppercase opacity-75">Saldo Consolidado</small>
         <h1 class="display-4 fw-bold" id="resSaldo">R$ 0,00</h1>
         <div class="d-flex gap-2 mt-3">
-            <div class="header-labels"><i class="bi bi-graph-up text-success"></i> <span id="resEnt" class="fw-bold">R$ 0,00</span></div>
-            <div class="header-labels"><i class="bi bi-graph-down text-danger"></i> <span id="resSai" class="fw-bold">R$ 0,00</span></div>
+            <div class="header-labels h-label"><i class="bi bi-graph-up text-success"></i> <span id="resEnt">R$ 0,00</span></div>
+            <div class="header-labels h-label"><i class="bi bi-graph-down text-danger"></i> <span id="resSai">R$ 0,00</span></div>
         </div>
     </div>
 
-    <div class="container mt-n3" style="margin-top: -35px; position: relative; z-index: 10;">
-        <ul class="nav nav-pills nav-fill shadow-lg" id="pills-tab" role="tablist">
-            <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#aba-n"><i class="bi bi-plus-lg"></i></button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#aba-e"><i class="bi bi-activity"></i></button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#aba-p"><i class="bi bi-shield-lock"></i></button></li>
-        </ul>
+    <div class="nav-custom">
+        <div class="nav-item-custom active" onclick="trocarAba('aba-n', this)"><i class="bi bi-plus-lg"></i></div>
+        <div class="nav-item-custom" onclick="trocarAba('aba-e', this)"><i class="bi bi-activity"></i></div>
+        <div class="nav-item-custom" onclick="trocarAba('aba-p', this)"><i class="bi bi-shield-lock"></i></div>
+    </div>
 
-        <div class="tab-content">
-            <div class="tab-pane fade show active" id="aba-n">
-                <div class="card-p">
-                    <select id="mes" class="form-select mb-3" onchange="draw()"></select>
-                    <div class="btn-group w-100 mb-3">
-                        <input type="radio" class="btn-check" name="tp" id="tE" value="Entrada" checked>
-                        <label class="btn btn-outline-success" for="tE">Entrada</label>
-                        <input type="radio" class="btn-check" name="tp" id="tS" value="Saída">
-                        <label class="btn btn-outline-danger" for="tS">Saída</label>
-                    </div>
-                    <input type="text" id="desc" class="form-control" placeholder="Descrição (Ex: Salário, Aluguel)">
-                    <input type="number" id="val" class="form-control" placeholder="Valor (R$)">
-                    <button onclick="add()" class="btn-m">Lançar Transação</button>
+    <div class="container">
+        <div id="aba-n" class="aba-content active">
+            <div class="card-p">
+                <select id="mes" class="form-select" onchange="renderizar()"></select>
+                <div class="btn-group w-100 mb-3">
+                    <input type="radio" class="btn-check" name="tp" id="tE" value="Entrada" checked>
+                    <label class="btn btn-outline-success" for="tE">Entrada</label>
+                    <input type="radio" class="btn-check" name="tp" id="tS" value="Saída">
+                    <label class="btn btn-outline-danger" for="tS">Saída</label>
                 </div>
-            </div>
-            
-            <div class="tab-pane fade" id="aba-e"><div id="list"></div></div>
-            
-            <div class="tab-pane fade" id="aba-p">
-                <div class="card-p text-center">
-                    <i class="bi bi-safe2 text-info display-5 mb-2"></i>
-                    <h6 class="text-muted small text-uppercase">Reserva de Capital</h6>
-                    <h2 class="fw-bold mb-4" id="resCofre">R$ 0,00</h2>
-                    <input type="number" id="valP" class="form-control text-center" placeholder="Valor R$">
-                    <div class="d-flex gap-2">
-                        <button onclick="poup('add')" class="btn-m">Depositar</button>
-                        <button onclick="poup('sub')" class="btn btn-outline-danger w-100 rounded-pill">Resgatar</button>
-                    </div>
-                </div>
+                <input type="text" id="desc" class="form-control" placeholder="Descrição">
+                <input type="number" id="val" class="form-control" placeholder="Valor R$">
+                <button onclick="add()" class="btn-m">Lançar Transação</button>
             </div>
         </div>
 
-        <div class="text-center mt-5">
-            <button onclick="limparTudo()" class="btn btn-sm text-muted border-0 opacity-25">Limpar Base de Dados</button>
+        <div id="aba-e" class="aba-content">
+            <div id="list"></div>
+        </div>
+
+        <div id="aba-p" class="aba-content">
+            <div class="card-p text-center">
+                <i class="bi bi-safe2 text-info display-5 mb-2"></i>
+                <h2 class="fw-bold mb-4" id="resCofre">R$ 0,00</h2>
+                <input type="number" id="valP" class="form-control text-center" placeholder="Valor R$">
+                <div class="d-flex gap-2">
+                    <button onclick="poup('add')" class="btn-m">Depositar</button>
+                    <button onclick="poup('sub')" class="btn btn-outline-danger w-100 border-2" style="border-radius:12px">Resgatar</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <button onclick="limpar()" class="btn btn-sm text-muted opacity-25 border-0">Resetar App</button>
         </div>
     </div>
 
     <script>
-        // REGISTRAR SERVICE WORKER
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
-        }
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
 
-        let db = JSON.parse(localStorage.getItem('fin_masc_vfinal')) || { t: [], c: 0 };
+        let db = JSON.parse(localStorage.getItem('fin_pro_vX')) || { t: [], c: 0 };
         const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-        
         const sel = document.getElementById('mes');
         meses.forEach(m => sel.innerHTML += `<option ${m === meses[new Date().getMonth()] ? 'selected' : ''}>${m}</option>`);
+
+        function trocarAba(id, el) {
+            document.querySelectorAll('.aba-content').forEach(a => a.classList.remove('active'));
+            document.querySelectorAll('.nav-item-custom').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            el.classList.add('active');
+            renderizar();
+        }
 
         function fmt(v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
 
         function add() {
             const m = sel.value, d = document.getElementById('desc').value, v = parseFloat(document.getElementById('val').value);
             const tp = document.querySelector('input[name="tp"]:checked').value;
-            if (!d || !v) return alert("Preencha Descrição e Valor!");
+            if (!d || !v) return alert("Preencha tudo!");
             db.t.push({ id: Date.now(), m, d, v, tp });
             save();
             document.getElementById('desc').value = ""; document.getElementById('val').value = "";
+            alert("Lançado!");
         }
 
         function poup(tipo) {
             const v = parseFloat(document.getElementById('valP').value) || 0;
-            if (v <= 0) return;
             db.c = (tipo === 'add') ? db.c + v : db.c - v;
             document.getElementById('valP').value = ""; save();
         }
 
-        function save() { localStorage.setItem('fin_masc_vfinal', JSON.stringify(db)); draw(); }
+        function save() { localStorage.setItem('fin_pro_vX', JSON.stringify(db)); renderizar(); }
 
-        function draw() {
+        function renderizar() {
             const mAt = sel.value, list = document.getElementById('list');
             list.innerHTML = ""; let ent = 0, sai = 0;
             db.t.filter(x => x.m === mAt).forEach(x => {
@@ -195,10 +128,7 @@
                 if(isE) ent += x.v; else sai += x.v;
                 list.innerHTML += `<div class="card-p mb-2" style="border-left: 5px solid ${isE ? 'var(--in)' : 'var(--out)'}; padding: 12px;">
                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="bi bi-trash3 btn-delete" onclick="del(${x.id})"></i>
-                            <b>${x.d}</b>
-                        </div>
+                        <div onclick="del(${x.id})"><i class="bi bi-trash3 text-muted me-2"></i><b>${x.d}</b></div>
                         <div class="${isE ? 'text-success' : 'text-danger'} fw-bold">${fmt(x.v)}</div>
                     </div></div>`;
             });
@@ -208,25 +138,14 @@
             document.getElementById('resCofre').innerText = fmt(db.c);
         }
 
-        function del(id) { if(confirm("Apagar transação?")) { db.t = db.t.filter(x => x.id !== id); save(); } }
-        function limparTudo() { if(confirm("Deseja resetar todo o app?")) { db = { t: [], c: 0 }; save(); } }
+        function del(id) { if(confirm("Apagar?")) { db.t = db.t.filter(x => x.id !== id); save(); } }
+        function limpar() { if(confirm("Resetar tudo?")) { db = { t: [], c: 0 }; save(); } }
 
-        // LÓGICA DE INSTALAÇÃO
-        let promptEvt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            promptEvt = e;
-            document.getElementById('install-bar').style.display = 'block';
-        });
+        let pmt;
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pmt = e; document.getElementById('install-bar').style.display = 'block'; });
+        function instalar() { if(pmt) { pmt.prompt(); document.getElementById('install-bar').style.display = 'none'; } }
 
-        function instalar() {
-            if (promptEvt) {
-                promptEvt.prompt();
-                document.getElementById('install-bar').style.display = 'none';
-            }
-        }
-
-        draw();
+        renderizar();
     </script>
 </body>
 </html>
