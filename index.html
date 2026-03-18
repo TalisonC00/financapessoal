@@ -86,7 +86,7 @@
                     <label class="btn btn-outline-danger" for="tS">Saída</label>
                 </div>
                 <input type="text" id="desc" class="form-control" placeholder="Descrição">
-                <input type="number" id="val" class="form-control" placeholder="Valor (R$)" oninput="ajustarBotaoPrincipal()">
+                <input type="number" id="val" class="form-control" placeholder="Valor" oninput="ajustarBotaoPrincipal()">
                 <div id="containerComentario" style="display:none;">
                     <input type="text" id="comentario" class="form-control" placeholder="⚠ Comentário (Ex: Retirada para pagar dívidas)">
                 </div>
@@ -100,7 +100,7 @@
             <div class="card-p text-center mb-3">
                 <i class="bi bi-safe2 text-success display-5 mb-2"></i>
                 <h2 class="fw-bold mb-4" id="resCofre">R$ 0,00</h2>
-                <input type="number" id="valP" class="form-control text-center" placeholder="Valor R$" oninput="validarBotoesCofre()">
+                <input type="number" id="valP" class="form-control text-center" placeholder="Valor" oninput="validarBotoesCofre()">
                 <div class="d-flex gap-2">
                     <button id="btnDep" onclick="poup('add')" class="btn-m btn-verde">Depositar</button>
                     <button id="btnRes" onclick="poup('sub')" class="btn-m btn-vermelho" style="background-color: transparent; border: 1px solid var(--out); color: var(--out);">Resgatar</button>
