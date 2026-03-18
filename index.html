@@ -8,51 +8,44 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        :root { 
-            --accent: #2ecc71; /* Verde Financeiro */
-            --bg: #121212; 
-            --card: #1e1e1e; 
-            --in: #2ecc71; 
-            --out: #e74c3c; 
-        }
+        :root { --accent: #2ecc71; --bg: #121212; --card: #1e1e1e; --in: #2ecc71; --out: #e74c3c; }
         body { background-color: var(--bg); color: #fff; font-family: sans-serif; overflow-x: hidden; }
         .premium-header { background: linear-gradient(135deg, #0f0c29, #1b3a1b); padding: 40px 20px 60px; border-radius: 0 0 30px 30px; text-align: center; }
-        .h-label { background: rgba(255, 255, 255, 0.08); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); flex: 1; }
-        .card-p { background: var(--card); border: 1px solid #444; border-radius: 16px; margin-bottom: 15px; padding: 20px; }
-        
-        .nav-custom { background: #252525; border-radius: 12px; display: flex; padding: 5px; margin: -30px 15px 20px; position: relative; z-index: 20; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .nav-item-custom { flex: 1; text-align: center; padding: 10px; color: #888; cursor: pointer; border-radius: 10px; }
+        .h-label { background: rgba(255, 255, 255, 0.08); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); flex: 1; }
+        .nav-custom { background: #252525; border-radius: 12px; display: flex; padding: 5px; margin: -30px 15px 20px; position: relative; z-index: 20; }
+        .nav-item-custom { flex: 1; text-align: center; padding: 10px; color: #888; cursor: pointer; border-radius: 10px; transition: 0.3s; }
         .nav-item-custom.active { background: var(--accent); color: #000; font-weight: bold; }
-
         .aba-content { display: none; }
         .aba-content.active { display: block; }
-
+        .card-p { background: var(--card); border: 1px solid #444; border-radius: 16px; margin-bottom: 15px; padding: 20px; }
         .form-control, .form-select { background: #252525; border: 1px solid #555; color: #fff; margin-bottom: 12px; }
-        .form-control::placeholder { color: #888; }
-        
-        /* Botão principal com transição de cor */
-        .btn-m { 
-            border: none; border-radius: 12px; padding: 14px; font-weight: 800; 
-            color: #000; width: 100%; text-transform: uppercase; 
-            transition: background-color 0.3s ease;
-        }
-        .btn-verde { background-color: var(--in); }
-        .btn-vermelho { background-color: var(--out); color: #fff; }
-
-        #toast { 
-            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-            background: #333; color: var(--accent); padding: 12px 25px; 
-            border-radius: 50px; border: 1px solid var(--accent);
-            z-index: 9999; display: none; font-weight: bold; 
-        }
+        .btn-m { border: none; border-radius: 12px; padding: 14px; font-weight: 800; width: 100%; text-transform: uppercase; transition: 0.3s; color: #000; }
+        .btn-verde { background-color: var(--in) !important; color: #000 !important; }
+        .btn-vermelho { background-color: var(--out) !important; color: #fff !important; }
+        #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 12px 25px; border-radius: 50px; border: 1px solid var(--accent); z-index: 9999; display: none; font-weight: bold; }
+        #modalConfirm { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; }
+        .modal-box { background: #1e1e1e; padding: 25px; border-radius: 20px; text-align: center; width: 85%; border: 1px solid #444; }
+        .hist-cofre { font-size: 0.85rem; max-height: 250px; overflow-y: auto; }
+        /* Estilo para o campo de comentário oculto */
+        #containerComentario { display: none; }
     </style>
 </head>
-<body class="pb-5">
+<body>
 
-    <div id="toast">Sucesso! ✅</div>
+    <div id="toast"></div>
+
+    <div id="modalConfirm">
+        <div class="modal-box">
+            <h5 class="mb-3" id="msgModal">Deseja apagar este registro?</h5>
+            <div class="d-flex gap-2">
+                <button onclick="fecharModal()" class="btn btn-secondary w-100 rounded-pill">Cancelar</button>
+                <button id="btnConfirmarDelete" class="btn btn-danger w-100 rounded-pill">Apagar</button>
+            </div>
+        </div>
+    </div>
 
     <div class="premium-header">
-        <small class="text-uppercase opacity-75">SALDO</small>
+        <small class="text-uppercase opacity-75">Saldo</small>
         <h1 class="display-4 fw-bold" id="resSaldo">R$ 0,00</h1>
         <div class="d-flex gap-2 mt-3">
             <div class="h-label"><i class="bi bi-graph-up text-success"></i> <span id="resEnt">R$ 0,00</span></div>
@@ -71,21 +64,24 @@
             <div class="card-p">
                 <select id="mes" class="form-select" onchange="renderizar()"></select>
                 <div class="btn-group w-100 mb-3">
-                    <input type="radio" class="btn-check" name="tp" id="tE" value="Entrada" checked onclick="atualizarCorBotao()">
+                    <input type="radio" class="btn-check" name="tp" id="tE" value="Entrada" checked onchange="ajustarBotao()">
                     <label class="btn btn-outline-success" for="tE">Entrada</label>
-                    <input type="radio" class="btn-check" name="tp" id="tS" value="Saída" onclick="atualizarCorBotao()">
+                    <input type="radio" class="btn-check" name="tp" id="tS" value="Saída" onchange="ajustarBotao()">
                     <label class="btn btn-outline-danger" for="tS">Saída</label>
                 </div>
                 <input type="text" id="desc" class="form-control" placeholder="Descrição">
                 <input type="number" id="val" class="form-control" placeholder="Valor">
-                <button id="btnLancar" onclick="add()" class="btn-m btn-verde">Registrar Transação</button>
+                <div id="containerComentario">
+                    <input type="text" id="comentario" class="form-control" placeholder="Comentário (opcional)">
+                </div>
+                <button id="btnPrincipal" onclick="add()" class="btn-m btn-verde">Registrar Entrada</button>
             </div>
         </div>
 
         <div id="aba-e" class="aba-content"><div id="list"></div></div>
 
         <div id="aba-p" class="aba-content">
-            <div class="card-p text-center">
+            <div class="card-p text-center mb-3">
                 <i class="bi bi-safe2 text-success display-5 mb-2"></i>
                 <h2 class="fw-bold mb-4" id="resCofre">R$ 0,00</h2>
                 <input type="number" id="valP" class="form-control text-center" placeholder="Valor R$">
@@ -94,30 +90,27 @@
                     <button onclick="poup('sub')" class="btn btn-outline-danger w-100 border-2" style="border-radius:12px">Resgatar</button>
                 </div>
             </div>
+            <h6 class="text-muted ms-2 mb-2 text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Histórico do Cofre</h6>
+            <div id="listCofre" class="hist-cofre"></div>
         </div>
     </div>
 
     <script>
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
-
-        let db = JSON.parse(localStorage.getItem('fin_pro_vX')) || { t: [], c: 0 };
+        // Versão com Histórico do Cofre e Comentários nas Saídas
+        let db = JSON.parse(localStorage.getItem('fin_v_hist_comentario')) || { t: [], c: 0, hc: [] };
         const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
         const sel = document.getElementById('mes');
         meses.forEach(m => sel.innerHTML += `<option ${m === meses[new Date().getMonth()] ? 'selected' : ''}>${m}</option>`);
 
-        // Função para mudar a cor e o texto do botão conforme a seleção
-        function atualizarCorBotao() {
-            const btn = document.getElementById('btnLancar');
+        function ajustarBotao() {
+            const btn = document.getElementById('btnPrincipal');
+            const containerComentario = document.getElementById('containerComentario');
             const tipo = document.querySelector('input[name="tp"]:checked').value;
-            if (tipo === "Saída") {
-                btn.classList.remove('btn-verde');
-                btn.classList.add('btn-vermelho');
-                btn.innerText = "Lançar Saída";
-            } else {
-                btn.classList.remove('btn-vermelho');
-                btn.classList.add('btn-verde');
-                btn.innerText = "Lançar Entrada";
-            }
+            btn.className = (tipo === "Saída") ? "btn-m btn-vermelho" : "btn-m btn-verde";
+            btn.innerText = (tipo === "Saída") ? "Registrar Saída" : "Registrar Entrada";
+            
+            // Exibir/ocultar campo de comentário
+            containerComentario.style.display = (tipo === "Saída") ? "block" : "none";
         }
 
         function showToast(msg) {
@@ -138,42 +131,96 @@
 
         function add() {
             const d = document.getElementById('desc').value, v = parseFloat(document.getElementById('val').value);
-            if (!d || !v) { showToast("⚠️ Preencha os campos!"); return; }
-            db.t.push({ id: Date.now(), m: sel.value, d, v, tp: document.querySelector('input[name="tp"]:checked').value });
+            const comentario = document.getElementById('comentario').value;
+            const tipo = document.querySelector('input[name="tp"]:checked').value;
+
+            if (!d || !v) return showToast("⚠️ Preencha os campos!");
+            
+            // Incluir comentário apenas para saídas
+            const transacao = { id: Date.now(), m: sel.value, d, v, tp: tipo };
+            if (tipo === "Saída") {
+                transacao.comentario = comentario;
+            }
+
+            db.t.push(transacao);
             save();
             document.getElementById('desc').value = ""; document.getElementById('val').value = "";
-            showToast("Lançado com sucesso! ✅");
+            document.getElementById('comentario').value = ""; // Limpar comentário
+            showToast("Lançado! ✅");
         }
 
         function poup(tipo) {
             const v = parseFloat(document.getElementById('valP').value) || 0;
-            if (v <= 0) return;
+            if(v <= 0) return;
+            const agora = new Date();
+            const dataFmt = `${agora.getDate()}/${agora.getMonth()+1} ${agora.getHours()}:${agora.getMinutes()}`;
+            
             db.c = (tipo === 'add') ? db.c + v : db.c - v;
+            // Adiciona ao histórico do cofre
+            db.hc.unshift({ id: Date.now(), v, tipo, data: dataFmt });
+            
             document.getElementById('valP').value = ""; save();
             showToast(tipo === 'add' ? "Poupado! 💰" : "Resgatado! 💸");
         }
 
-        function save() { localStorage.setItem('fin_pro_vX', JSON.stringify(db)); renderizar(); }
+        function save() { localStorage.setItem('fin_v_hist_comentario', JSON.stringify(db)); renderizar(); }
 
         function renderizar() {
+            // Renderizar Transações Mensais
             const list = document.getElementById('list');
             list.innerHTML = ""; let ent = 0, sai = 0;
             db.t.filter(x => x.m === sel.value).forEach(x => {
                 const isE = x.tp === "Entrada";
                 if(isE) ent += x.v; else sai += x.v;
-                list.innerHTML += `<div class="card-p mb-2" style="border-left: 5px solid ${isE ? 'var(--in)' : 'var(--out)'}; padding: 12px;">
+                
+                // Montar HTML da transação com comentário opcional
+                let transacaoHtml = `<div class="card-p mb-2" style="border-left: 5px solid ${isE ? 'var(--in)' : 'var(--out)'}; padding: 12px;">
                     <div class="d-flex justify-content-between align-items-center">
-                        <div onclick="del(${x.id})"><i class="bi bi-trash3 text-muted me-2"></i><b>${x.d}</b></div>
+                        <div onclick="abrirModal(${x.id}, 't')"><i class="bi bi-trash3 text-muted me-2"></i><b>${x.d}</b></div>
                         <div class="${isE ? 'text-success' : 'text-danger'} fw-bold">${fmt(x.v)}</div>
+                    </div>`;
+                
+                // Adicionar comentário se houver e for uma saída
+                if (x.tp === "Saída" && x.comentario) {
+                    transacaoHtml += `<div class="mt-2 text-dark" style="font-size: 0.85rem;">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i> ${x.comentario}
+                    </div>`;
+                }
+                
+                transacaoHtml += `</div>`;
+                list.innerHTML += transacaoHtml;
+            });
+
+            // Renderizar Histórico do Cofre (Inalterado)
+            const listC = document.getElementById('listCofre');
+            listC.innerHTML = "";
+            db.hc.forEach(x => {
+                const isAdd = x.tipo === 'add';
+                listC.innerHTML += `<div class="card-p mb-2 py-2 px-3" style="border-left: 3px solid ${isAdd ? 'var(--in)' : 'var(--out)'}; opacity: 0.8;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">${x.data} <i class="bi bi-trash3 ms-2" onclick="abrirModal(${x.id}, 'hc')"></i></small>
+                        <span class="${isAdd ? 'text-success' : 'text-danger'} fw-bold">${isAdd ? '+' : '-'}${fmt(x.v)}</span>
                     </div></div>`;
             });
+
             document.getElementById('resEnt').innerText = fmt(ent);
             document.getElementById('resSai').innerText = fmt(sai);
             document.getElementById('resSaldo').innerText = fmt(ent - sai);
             document.getElementById('resCofre').innerText = fmt(db.c);
         }
 
-        function del(id) { if(confirm("Apagar registro?")) { db.t = db.t.filter(x => x.id !== id); save(); showToast("Removido! 🗑️"); } }
+        let idApagar = null, tipoApagar = '';
+        function abrirModal(id, tipo) {
+            idApagar = id; tipoApagar = tipo;
+            document.getElementById('modalConfirm').style.display = 'flex';
+        }
+        function fecharModal() { document.getElementById('modalConfirm').style.display = 'none'; }
+        
+        document.getElementById('btnConfirmarDelete').onclick = function() {
+            if(tipoApagar === 't') db.t = db.t.filter(x => x.id !== idApagar);
+            else db.hc = db.hc.filter(x => x.id !== idApagar);
+            save(); fecharModal(); showToast("Removido!");
+        };
 
         renderizar();
     </script>
