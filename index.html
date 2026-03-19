@@ -173,7 +173,7 @@
             if (!desc || val <= 0) return showToast("⚠️ Preencha os campos!");
             dados.transacoes.push({ id: Date.now(), mes: selMes.value, d: desc, v: val, tp: tipo, coment: tipo === "Saída" ? coment : "" });
             salvar(); document.getElementById('desc').value = ""; document.getElementById('val').value = ""; document.getElementById('comentario').value = "";
-            showToast("Lançado! ✨");
+            showToast("Lançado! 💰");
         }
 
         function poup(tipo) {
@@ -182,7 +182,7 @@
             dados.cofre = (tipo === 'add') ? dados.cofre + v : dados.cofre - v;
             dados.histCofre.unshift({ id: Date.now(), v, tipo, coment: c, data: new Date().toLocaleDateString() });
             document.getElementById('valP').value = ""; document.getElementById('comentarioCofre').value = "";
-            validarBotoesCofre(); salvar(); showToast("Cofre atualizado! 💎");
+            validarBotoesCofre(); salvar(); showToast("Cofre atualizado! 💰");
         }
 
         let idApagar = null, tipoApagar = '';
@@ -209,7 +209,7 @@
             });
 
             // CORREÇÃO: Renderizar e Recalcular Saldo do Cofre Masculino
-            if(dados.histCofre.length === 0) listHCofre.innerHTML = '<div class="text-center text-muted opacity-50 py-3 small">Cofre vazio 💎</div>';
+            if(dados.histCofre.length === 0) listHCofre.innerHTML = '<div class="text-center text-muted opacity-50 py-3 small">Cofre vazio 🐷</div>';
             dados.histCofre.forEach(x => {
                 const isAdd = x.tipo === 'add';
                 if(isAdd) saldoCofre += x.v; else saldoCofre -= x.v; // Recalcula o saldo
