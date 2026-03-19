@@ -209,7 +209,7 @@
             });
 
             // CORREÇÃO: Renderizar e Recalcular Saldo do Cofre Masculino
-            if(dados.histCofre.length === 0) listHCofre.innerHTML = '<div class="text-center text-muted opacity-50 py-3 small">Cofre vazio 🐷</div>';
+            if(dados.histCofre.length === 0) listHCofre.innerHTML = '<div class="text-center text-muted opacity-50 py-3 small">Cofre vazio</div>';
             dados.histCofre.forEach(x => {
                 const isAdd = x.tipo === 'add';
                 if(isAdd) saldoCofre += x.v; else saldoCofre -= x.v; // Recalcula o saldo
